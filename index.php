@@ -4,7 +4,7 @@ require 'vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Html;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
+// use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
@@ -19,16 +19,16 @@ $spreadsheet->getProperties()->setCreator('Maarten Balliauw')
 
 
 // Generate demo data for 10 rows
-// $data = [];
-// for ($i = 1; $i <= 10; $i++) {
-//     $data[] = [
-//         "Transaction $i", "Customer $i", "Contact $i", "Business $i", "Identification $i",
-//         "Beneficiary $i", "Beneficiary Contact $i", "Beneficiary Business $i", "Account $i",
-//         "Accepting Person/Org $i", "Accepting Money/Org $i", "Sending Person/Org $i",
-//         "Receiving Person/Org $i", "Distributing Person/Org $i", "Retail Outlet $i",
-//         "Reason $i", "Person Completing $i"
-//     ];
-// }
+$data = [];
+for ($i = 1; $i <= 100; $i++) {
+    $data[] = [
+        "Transaction $i", "Customer $i", "Contact $i", "Business $i", "Identification $i",
+        "Beneficiary $i", "Beneficiary Contact $i", "Beneficiary Business $i", "Account $i",
+        "Accepting Person/Org $i", "Accepting Money/Org $i", "Sending Person/Org $i",
+        "Receiving Person/Org $i", "Distributing Person/Org $i", "Retail Outlet $i",
+        "Reason $i", "Person Completing $i"
+    ];
+}
 
 // Main header
 $mainHeader = [
@@ -129,15 +129,29 @@ foreach ($mainHeader as $header) {
             $columnEnd++;
         }
 
+        if (
+            $header == 'Ordering customer' ||
+            $header == 'Ordering customer business details' ||
+            $header == 'Ordering customer identification details' ||
+            $header == 'Person/organisation accepting the transfer instruction from the ordering customer' ||
+            $header == 'Reason' ||
+            $header == 'Person/organisation sending the transfer instruction (if different)' ||
+            $header ==   "Person/organisation distributing money or property (if different)"
+        ) {
+            $color = "c9c299";
+        } else {
+            $color = "FFFFDD";
+        }
+
         $endColumn = $columnEnd . $rowStart;
         $sheet->mergeCells($columnStart . $rowStart . ':' . $endColumn);
         $sheet->setCellValue($columnStart . $rowStart, $header);
         $sheet->getStyle($columnStart . $rowStart . ':' . $endColumn)
-            ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFDD');
+            ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($color);
 
         foreach ($subHeaders[$header] as $subHeader) {
             $sheet->setCellValue($columnStart . ($rowStart + 1), $subHeader);
-            $sheet->getStyle($columnStart . ($rowStart + 1))->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFDD');
+            $sheet->getStyle($columnStart . ($rowStart + 1))->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($color);
             $columnStart++;
         }
     } else {
@@ -158,15 +172,6 @@ foreach ($mainHeader as $header) {
 //     $column++;
 // }
 
-// Set subheaders in row 2
-// $column = 'A';
-// foreach ($subHeadersTransactiondetails as $subHeader) {
-//     $sheet->setCellValue($column . '2', $subHeader);
-//     // Set background color for subheader cell
-//     $sheet->getStyle($column . '2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFDD');
-//     $sheet->getStyle($column . '2')->getAlignment()->setHorizontal('left'); // Align text left for subheader cell
-//     $column++;
-// }
 
 // Set width for Transaction details header columns (A to G) and align text left
 // $columnsForTransactionDetails = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
@@ -176,15 +181,49 @@ foreach ($mainHeader as $header) {
 // }
 
 // // Add demo data
-// $row = 3; // Start from the third row
-// foreach ($data as $rowData) {
-//     $column = 'A';
-//     foreach ($rowData as $value) {
-//         $sheet->setCellValue($column . $row, $value);
-//         $column++;
-//     }
-//     $row++;
-// }
+$row = 3; // Start from the third row
+foreach ($data as $rowData) {
+    $column = 'A';
+    foreach ($rowData as $value) {
+        $sheet->setCellValue($column . $row, $value);
+        $column++;
+    }
+    $row++;
+}
+
+$dataFooter[] = [
+    'Created Date', 'Created Date'
+];
+
+$rowFooterStart = count($data) + 4;
+
+foreach ($dataFooter as $rowData) {
+    $column = 'A';
+
+    $subHeaderCount = count($rowData);
+    $columnEnd = $column; // Change this variable name from $columnStart to $column
+
+    for ($i = 1; $i <= $subHeaderCount - 1; $i++) {
+        $columnEnd++;
+    }
+
+    $endColumn = $columnEnd . $rowFooterStart;
+
+    $sheet->getStyle($column . $rowFooterStart . ':' . $endColumn)
+        ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('ffff00');
+
+    foreach ($rowData as $value) {
+        $sheet->setCellValue($column . $rowFooterStart, $value);
+        $column++;
+    }
+
+    $rowFooterStart++;
+}
+
+
+
+
 
 // Save the Excel file
 $writer = new Xlsx($spreadsheet);
