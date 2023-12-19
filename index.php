@@ -20,15 +20,18 @@ $spreadsheet->getProperties()->setCreator('Maarten Balliauw')
 
 // Generate demo data for 10 rows
 $data = [];
-for ($i = 1; $i <= 100; $i++) {
-    $data[] = [
-        "Transaction $i", "Customer $i", "Contact $i", "Business $i", "Identification $i",
-        "Beneficiary $i", "Beneficiary Contact $i", "Beneficiary Business $i", "Account $i",
-        "Accepting Person/Org $i", "Accepting Money/Org $i", "Sending Person/Org $i",
-        "Receiving Person/Org $i", "Distributing Person/Org $i", "Retail Outlet $i",
-        "Reason $i", "Person Completing $i"
-    ];
+
+for ($i = 1; $i <= 10; $i++) {
+    $innerData = []; // Initialize an empty array for each $i
+
+    for ($j = 1; $j <= 110; $j++) {
+        $innerData[] = $j; // Add $j to the inner array
+    }
+
+    $data[] = $innerData; // Add the inner array to $data
 }
+
+
 
 // Main header
 $mainHeader = [
@@ -192,10 +195,18 @@ foreach ($data as $rowData) {
 }
 
 $dataFooter[] = [
-    'Created Date', 'Created Date'
+    'Created Date', 'Created Date', 'AUD', 'Send Amount', 'Money', 'Money', 'Money', 'Transaction Number', 'Sender Firstname + Lastname', '_',
+    'Sender Date of Birth', 'Sender Address', 'Sender City', 'Sender State', 'Sender Postcode', 'Sender Country', '_', '_', '_', '_', '_',
+    'Sender phone', 'Sender email', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_',
+    'Receiver Firstname + Lastname', '_', '_', 'Receiver Address', 'Receiver City', 'Receiver State', 'Receiver postcode', 'Receiver Country', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_',
+    'Reciver Account Number', 'Receiver Bank name', 'Receiver Bank City', 'Receiver Bank Country', '4', 'Acare Business Solutions Pty Ltd', 'Shop T26, Level 1, Capitol Square 730-742 George Street', 'Haymarket', 'NSW', '2000',
+    'Yes', 'Yes', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_',
+    'Transferrer Name', 'Transferrer Address', 'Transferrer City', 'Transferrer State', 'Transferrer Postcode', 'Transferrer Country', 'Yes', 'No', '_', '_', '_', '_', '_', '_', '_', '_', '_',
+    'Purpose of transfer', '_', '_', '_', '_'
 ];
 
 $rowFooterStart = count($data) + 4;
+
 
 foreach ($dataFooter as $rowData) {
     $column = 'A';
