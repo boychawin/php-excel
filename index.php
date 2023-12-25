@@ -4,18 +4,18 @@ require 'vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Html;
-// use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 
-$spreadsheet->getProperties()->setCreator('Maarten Balliauw')
-    ->setLastModifiedBy('Maarten Balliauw')
-    ->setTitle('Office 2007 XLSX Test Document')
-    ->setSubject('Office 2007 XLSX Test Document')
-    ->setDescription('Test document for Office 2007 XLSX, generated using PHP classes.')
-    ->setKeywords('office 2007 openxml php')
-    ->setCategory('Test result file');
+$spreadsheet->getProperties()->setCreator('Transaction details')
+    ->setLastModifiedBy('Transaction details')
+    ->setTitle('Transaction details')
+    ->setSubject('Transaction details')
+    ->setDescription('Transaction details')
+    ->setKeywords('php')
+    ->setCategory('Excel');
 
 
 // Generate demo data for 10 rows
@@ -117,10 +117,55 @@ $subHeaders = [
     ]
 ];
 
+
+
+$columnSettings = [
+    ['maxColumn' => 'A', 'width' => 295],
+    ['maxColumn' => 'B', 'width' => 334],
+    ['maxColumn' => 'C', 'width' => 70],
+    ['maxColumn' => 'D', 'width' => 102],
+    ['maxColumn' => 'E', 'width' => 80],
+    ['maxColumn' => 'F', 'width' => 117],
+    ['maxColumn' => 'G', 'width' => 154],
+    ['maxColumn' => 'H', 'width' => 141],
+    ['maxColumn' => 'I', 'width' => 154],
+    ['maxColumn' => 'J', 'width' => 280],
+    ['maxColumn' => 'K', 'width' => 88],
+    ['maxColumn' => 'L', 'width' => 76],
+    ['maxColumn' => 'M', 'width' => 88],
+    ['maxColumn' => 'N', 'width' => 47],
+    ['maxColumn' => 'O', 'width' => 211],
+    ['maxColumn' => 'P', 'width' => 89],
+    ['maxColumn' => 'Q', 'width' => 207],
+    ['maxColumn' => 'R', 'width' => 173],
+    ['maxColumn' => 'S', 'width' => 203],
+    // ['maxColumn' => 'T', 'width' => 100],
+    // ['maxColumn' => 'U', 'width' => 100],
+    // ['maxColumn' => 'V', 'width' => 100],
+    // ['maxColumn' => 'W', 'width' => 100],
+    // ['maxColumn' => 'X', 'width' => 100],
+    // ['maxColumn' => 'Y', 'width' => 100],
+    // ['maxColumn' => 'Z', 'width' => 100],
+    // ['maxColumn' => 'AA', 'width' => 100],
+    // ['maxColumn' => 'AB', 'width' => 100],
+    // ['maxColumn' => 'AC', 'width' => 100],
+    // ['maxColumn' => 'AD', 'width' => 100],
+    // // ... continue until 'DF'
+    // ['maxColumn' => 'DF', 'width' => 100],
+];
+
+
+$styleArray = array(
+    'borders' => array(
+        'outline' => array(
+            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+            'color' => array('argb' => 'FFFF0000'),
+        ),
+    ),
+);
+
+
 // Set main headers in row 1
-
-
-
 $columnStart = 'A';
 $rowStart = 1;
 
@@ -149,17 +194,27 @@ foreach ($mainHeader as $header) {
         $endColumn = $columnEnd . $rowStart;
         $sheet->mergeCells($columnStart . $rowStart . ':' . $endColumn);
         $sheet->setCellValue($columnStart . $rowStart, $header);
-        $sheet->getStyle($columnStart . $rowStart . ':' . $endColumn)
-            ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($color);
-
+        $sheet->getStyle($columnStart . $rowStart . ':' . $endColumn)->applyFromArray($styleArray)
+            ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor();
+            // foreach ($columnSettings as $column) {
+            //     $maxColumn = $column['maxColumn'];
+            //     $width = $column['width'];
+            
+            //     $maxColumnIndex = Coordinate::columnIndexFromString($maxColumn);
+            
+            //     for ($columnIndex = 1; $columnIndex <= $maxColumnIndex; $columnIndex++) {
+            //         $columnLetter = Coordinate::stringFromColumnIndex($columnIndex);
+            //         $sheet->getColumnDimension($columnLetter)->setWidth($width);
+            //     }
+            // }
         foreach ($subHeaders[$header] as $subHeader) {
             $sheet->setCellValue($columnStart . ($rowStart + 1), $subHeader);
-            $sheet->getStyle($columnStart . ($rowStart + 1))->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+            $sheet->getStyle($columnStart . ($rowStart + 1))->applyFromArray($styleArray)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor();
             $columnStart++;
         }
     } else {
         $sheet->setCellValue($columnStart . $rowStart, $header);
-        $sheet->getStyle($columnStart . $rowStart)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('000000');
+        $sheet->getStyle($columnStart . $rowStart)->applyFromArray($styleArray)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor();
         $columnStart++;
     }
 }
@@ -167,23 +222,8 @@ foreach ($mainHeader as $header) {
 
 
 
-// // Set width for main headers
-// $sheet->getColumnDimension('A')->setWidth(40); // Adjust width for the main header cell
-// $column = 'B';
-// foreach ($mainHeader as $header) {
-//     $sheet->getColumnDimension($column)->setWidth(25); // Adjust width for main header cells
-//     $column++;
-// }
 
 
-// Set width for Transaction details header columns (A to G) and align text left
-// $columnsForTransactionDetails = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-// foreach ($columnsForTransactionDetails as $col) {
-//     $sheet->getColumnDimension($col)->setWidth(25); // Adjust width for Transaction details header columns
-//     $sheet->getStyle($col . '2')->getAlignment()->setHorizontal('left'); // Align text left for Transaction details header
-// }
-
-// // Add demo data
 $row = 3; // Start from the third row
 foreach ($data as $rowData) {
     $column = 'A';
@@ -232,18 +272,14 @@ foreach ($dataFooter as $rowData) {
     $rowFooterStart++;
 }
 
-
-
-
-
 // Save the Excel file
 $writer = new Xlsx($spreadsheet);
-$filename = 'transaction_details.xlsx';
+$filename = 'downloads/transaction_details.xlsx';
 $writer->save($filename);
 
 // Generate HTML preview
 $htmlWriter = new Html($spreadsheet);
-$htmlFilename = 'transaction_details.html';
+$htmlFilename = 'downloads/transaction_details.html';
 $htmlWriter->save($htmlFilename);
 
 // HTML content to display a message after creating the Excel file with a full-width preview
