@@ -4,7 +4,6 @@ require 'vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Html;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
@@ -22,16 +21,14 @@ $spreadsheet->getProperties()->setCreator('Transaction details')
 $data = [];
 
 for ($i = 1; $i <= 10; $i++) {
-    $innerData = []; // Initialize an empty array for each $i
+    $innerData = [];
 
     for ($j = 1; $j <= 110; $j++) {
-        $innerData[] = $j; // Add $j to the inner array
+        $innerData[] = $j;
     }
 
-    $data[] = $innerData; // Add the inner array to $data
+    $data[] = $innerData;
 }
-
-
 
 // Main header
 $mainHeader = [
@@ -118,7 +115,6 @@ $subHeaders = [
 ];
 
 
-
 $columnSettings = [
     ['maxColumn' => 'A', 'width' => 295],
     ['maxColumn' => 'B', 'width' => 334],
@@ -165,6 +161,18 @@ $styleArray = array(
 );
 
 
+$dataFooter[] = [
+    'Created Date', 'Created Date', 'AUD', 'Send Amount', 'Money', 'Money', 'Money', 'Transaction Number', 'Sender Firstname + Lastname', '_',
+    'Sender Date of Birth', 'Sender Address', 'Sender City', 'Sender State', 'Sender Postcode', 'Sender Country', '_', '_', '_', '_', '_',
+    'Sender phone', 'Sender email', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_',
+    'Receiver Firstname + Lastname', '_', '_', 'Receiver Address', 'Receiver City', 'Receiver State', 'Receiver postcode', 'Receiver Country', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_',
+    'Reciver Account Number', 'Receiver Bank name', 'Receiver Bank City', 'Receiver Bank Country', '4', 'Acare Business Solutions Pty Ltd', 'Shop T26, Level 1, Capitol Square 730-742 George Street', 'Haymarket', 'NSW', '2000',
+    'Yes', 'Yes', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_',
+    'Transferrer Name', 'Transferrer Address', 'Transferrer City', 'Transferrer State', 'Transferrer Postcode', 'Transferrer Country', 'Yes', 'No', '_', '_', '_', '_', '_', '_', '_', '_', '_',
+    'Purpose of transfer', '_', '_', '_', '_'
+];
+
+
 // Set main headers in row 1
 $columnStart = 'A';
 $rowStart = 1;
@@ -195,32 +203,18 @@ foreach ($mainHeader as $header) {
         $sheet->mergeCells($columnStart . $rowStart . ':' . $endColumn);
         $sheet->setCellValue($columnStart . $rowStart, $header);
         $sheet->getStyle($columnStart . $rowStart . ':' . $endColumn)->applyFromArray($styleArray)
-            ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor();
-            // foreach ($columnSettings as $column) {
-            //     $maxColumn = $column['maxColumn'];
-            //     $width = $column['width'];
-            
-            //     $maxColumnIndex = Coordinate::columnIndexFromString($maxColumn);
-            
-            //     for ($columnIndex = 1; $columnIndex <= $maxColumnIndex; $columnIndex++) {
-            //         $columnLetter = Coordinate::stringFromColumnIndex($columnIndex);
-            //         $sheet->getColumnDimension($columnLetter)->setWidth($width);
-            //     }
-            // }
+            ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($color);
         foreach ($subHeaders[$header] as $subHeader) {
             $sheet->setCellValue($columnStart . ($rowStart + 1), $subHeader);
-            $sheet->getStyle($columnStart . ($rowStart + 1))->applyFromArray($styleArray)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor();
+            $sheet->getStyle($columnStart . ($rowStart + 1))->applyFromArray($styleArray)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($color);
             $columnStart++;
         }
     } else {
         $sheet->setCellValue($columnStart . $rowStart, $header);
-        $sheet->getStyle($columnStart . $rowStart)->applyFromArray($styleArray)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor();
+        $sheet->getStyle($columnStart . $rowStart)->applyFromArray($styleArray)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB("000000");
         $columnStart++;
     }
 }
-
-
-
 
 
 
@@ -234,20 +228,8 @@ foreach ($data as $rowData) {
     $row++;
 }
 
-$dataFooter[] = [
-    'Created Date', 'Created Date', 'AUD', 'Send Amount', 'Money', 'Money', 'Money', 'Transaction Number', 'Sender Firstname + Lastname', '_',
-    'Sender Date of Birth', 'Sender Address', 'Sender City', 'Sender State', 'Sender Postcode', 'Sender Country', '_', '_', '_', '_', '_',
-    'Sender phone', 'Sender email', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_',
-    'Receiver Firstname + Lastname', '_', '_', 'Receiver Address', 'Receiver City', 'Receiver State', 'Receiver postcode', 'Receiver Country', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_',
-    'Reciver Account Number', 'Receiver Bank name', 'Receiver Bank City', 'Receiver Bank Country', '4', 'Acare Business Solutions Pty Ltd', 'Shop T26, Level 1, Capitol Square 730-742 George Street', 'Haymarket', 'NSW', '2000',
-    'Yes', 'Yes', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_',
-    'Transferrer Name', 'Transferrer Address', 'Transferrer City', 'Transferrer State', 'Transferrer Postcode', 'Transferrer Country', 'Yes', 'No', '_', '_', '_', '_', '_', '_', '_', '_', '_',
-    'Purpose of transfer', '_', '_', '_', '_'
-];
 
 $rowFooterStart = count($data) + 4;
-
-
 foreach ($dataFooter as $rowData) {
     $column = 'A';
 
@@ -272,14 +254,19 @@ foreach ($dataFooter as $rowData) {
     $rowFooterStart++;
 }
 
+$path_upload = './downloads';
+if (!file_exists($path_upload)) {
+    mkdir($path_upload, 0755, true);
+}
+
 // Save the Excel file
 $writer = new Xlsx($spreadsheet);
-$filename = 'downloads/transaction_details.xlsx';
+$filename = "$path_upload/transaction_details.xlsx";
 $writer->save($filename);
 
 // Generate HTML preview
 $htmlWriter = new Html($spreadsheet);
-$htmlFilename = 'downloads/transaction_details.html';
+$htmlFilename = "$path_upload/transaction_details.html";
 $htmlWriter->save($htmlFilename);
 
 // HTML content to display a message after creating the Excel file with a full-width preview
